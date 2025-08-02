@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/auth_service.dart';
 import '../services/hospital_service.dart';
+import 'admin_schedule_management.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -157,44 +158,106 @@ class _AdminDashboardState extends State<AdminDashboard> {
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(child: Text('Henüz doktor bulunmuyor'));
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.medical_services,
+                  size: 80,
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 16),
+                const Text('Henüz doktor bulunmuyor'),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () => _addSampleDoctor(),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Örnek Doktor Ekle'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade600,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          );
         }
 
-        return ListView.builder(
-          itemCount: snapshot.data!.docs.length,
-          itemBuilder: (context, index) {
-            final doc = snapshot.data!.docs[index];
-            final userData = doc.data() as Map<String, dynamic>;
-
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: ListTile(
-                leading: const CircleAvatar(
-                  backgroundColor: Colors.blue,
-                  child: Icon(Icons.medical_services, color: Colors.white),
-                ),
-                title: Text(
-                  'Dr. ${userData['firstName']} ${userData['lastName']}',
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Email: ${userData['email']}'),
-                    Text(
-                      'Uzmanlık: ${userData['specialization'] ?? 'Belirtilmemiş'}',
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Doktorlar',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    Text('Durum: ${_getDoctorStatus(userData['status'])}'),
-                  ],
-                ),
-                trailing: Switch(
-                  value: userData['isActive'] ?? true,
-                  onChanged: (bool value) {
-                    _toggleDoctorStatus(doc.id, value);
-                  },
-                ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: _addSampleDoctor,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Yeni Doktor'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade600,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
               ),
-            );
-          },
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  final doc = snapshot.data!.docs[index];
+                  final userData = doc.data() as Map<String, dynamic>;
+
+                  return Card(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: ListTile(
+                      leading: const CircleAvatar(
+                        backgroundColor: Colors.blue,
+                        child: Icon(
+                          Icons.medical_services,
+                          color: Colors.white,
+                        ),
+                      ),
+                      title: Text(
+                        'Dr. ${userData['firstName']} ${userData['lastName']}',
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Email: ${userData['email']}'),
+                          Text(
+                            'Uzmanlık: ${userData['specialization'] ?? 'Belirtilmemiş'}',
+                          ),
+                          Text(
+                            'Durum: ${_getDoctorStatus(userData['status'])}',
+                          ),
+                        ],
+                      ),
+                      trailing: Switch(
+                        value: userData['isActive'] ?? true,
+                        onChanged: (bool value) {
+                          _toggleDoctorStatus(doc.id, value);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         );
       },
     );
@@ -589,20 +652,63 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   Widget _buildScheduleTab() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.schedule, size: 80, color: Colors.grey),
-          SizedBox(height: 20),
-          Text(
-            'Nöbet Programı',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          const Icon(Icons.schedule, size: 80, color: Colors.green),
+          const SizedBox(height: 16),
+          const Text(
+            'Nöbet Yönetimi',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.green,
+            ),
           ),
-          SizedBox(height: 10),
-          Text(
-            'Nöbet programı yönetimi yakında eklenecek',
-            style: TextStyle(fontSize: 16),
+          const SizedBox(height: 8),
+          const Text(
+            'Doktor nöbet atama ve yönetimi için\ngelişmiş arayüzü kullanın',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AdminScheduleManagement(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.assignment_ind),
+            label: const Text('Nöbet Yönetimine Git'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green.shade600,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              textStyle: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () =>
+                    Navigator.pushNamed(context, '/doctor-schedule'),
+                icon: const Icon(Icons.schedule),
+                label: const Text('Hızlı Nöbet Planla'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -1308,5 +1414,72 @@ class _AdminDashboardState extends State<AdminDashboard> {
         );
       },
     );
+  }
+
+  Future<void> _addSampleDoctor() async {
+    try {
+      final sampleDoctors = [
+        {
+          'firstName': 'Ahmet',
+          'lastName': 'Yılmaz',
+          'email': 'ahmet.yilmaz@hastane.com',
+          'tcNo': '12345678901',
+          'phone': '05551234567',
+          'role': 'doctor',
+          'specialization': 'Acil Tıp',
+          'isActive': true,
+          'status': 'approved',
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+        {
+          'firstName': 'Fatma',
+          'lastName': 'Demir',
+          'email': 'fatma.demir@hastane.com',
+          'tcNo': '12345678902',
+          'phone': '05551234568',
+          'role': 'doctor',
+          'specialization': 'Dahiliye',
+          'isActive': true,
+          'status': 'approved',
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+        {
+          'firstName': 'Mehmet',
+          'lastName': 'Kaya',
+          'email': 'mehmet.kaya@hastane.com',
+          'tcNo': '12345678903',
+          'phone': '05551234569',
+          'role': 'doctor',
+          'specialization': 'Kardiyoloji',
+          'isActive': true,
+          'status': 'approved',
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+      ];
+
+      for (final doctor in sampleDoctors) {
+        await _firestore.collection('users').add(doctor);
+      }
+
+      if (mounted) {
+        final messengerContext = ScaffoldMessenger.of(context);
+        messengerContext.showSnackBar(
+          const SnackBar(
+            content: Text('Örnek doktorlar başarıyla eklendi'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        final messengerContext = ScaffoldMessenger.of(context);
+        messengerContext.showSnackBar(
+          SnackBar(
+            content: Text('Doktor ekleme hatası: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

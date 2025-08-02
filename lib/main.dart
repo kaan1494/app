@@ -9,7 +9,9 @@ import 'screens/dashboard_screen.dart';
 import 'screens/admin_dashboard_screen.dart';
 import 'screens/admin_dashboard_new.dart';
 import 'screens/create_doctor_screen.dart';
+import 'screens/doctor_schedule_screen.dart';
 import 'services/auth_service.dart';
+import 'utils/admin_setup.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +30,9 @@ void main() async {
         print('🔄 Firebase zaten başlatılmış');
       }
     }
+
+    // Admin hesabını kontrol et ve oluştur
+    await AdminSetup.createAdminIfNotExists();
   } catch (e) {
     if (kDebugMode) {
       print('❌ Firebase başlatma hatası: $e');
@@ -65,6 +70,7 @@ class HastaneAcilApp extends StatelessWidget {
         '/admin': (context) => const AdminDashboardScreen(),
         '/admin-new': (context) => const AdminDashboard(),
         '/admin/create-doctor': (context) => const CreateDoctorScreen(),
+        '/doctor-schedule': (context) => const DoctorScheduleScreen(),
       },
     );
   }

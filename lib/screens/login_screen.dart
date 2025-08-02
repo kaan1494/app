@@ -205,35 +205,72 @@ class _LoginScreenState extends State<LoginScreen> {
             _passwordController.text == 'HastaneAdmin2025!') {
           // Debug modda log, production'da hiçbir şey yazdırma
           if (kDebugMode) {
-            debugPrint('Admin authentication attempt detected');
+            debugPrint('🔍 Admin authentication attempt detected');
           }
 
-          // Admin hesabını Firestore'dan al
-          final adminQuery = await FirebaseFirestore.instance
-              .collection('users')
-              .where('email', isEqualTo: 'admin@hastane-acil.com')
-              .where('role', isEqualTo: 'admin')
-              .limit(1)
-              .get();
+          try {
+            // Admin hesabını Firestore'dan al
+            if (kDebugMode) {
+              debugPrint('🔍 Firestore admin query başlatılıyor...');
+            }
 
-          if (adminQuery.docs.isNotEmpty) {
-            final adminData = adminQuery.docs.first.data();
+            final adminQuery = await FirebaseFirestore.instance
+                .collection('users')
+                .where('email', isEqualTo: 'admin@hastane-acil.com')
+                .where('role', isEqualTo: 'admin')
+                .limit(1)
+                .get();
 
+            if (kDebugMode) {
+              debugPrint(
+                '🔍 Admin query sonucu: ${adminQuery.docs.length} doküman bulundu',
+              );
+            }
+
+            if (adminQuery.docs.isNotEmpty) {
+              final adminData = adminQuery.docs.first.data();
+
+              if (kDebugMode) {
+                debugPrint('🔍 Admin data: ${adminData.toString()}');
+              }
+
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '✅ Hoş geldiniz ${adminData['firstName']} ${adminData['lastName']}!',
+                    ),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+
+                if (kDebugMode) {
+                  debugPrint('🔍 Admin paneline yönlendiriliyor: /admin-new');
+                }
+
+                // Yeni admin dashboard'a yönlendir
+                Navigator.pushReplacementNamed(context, '/admin-new');
+                return;
+              }
+            } else {
+              if (kDebugMode) {
+                debugPrint('❌ Admin hesabı Firestore\'da bulunamadı');
+              }
+              throw Exception('Admin hesabı bulunamadı');
+            }
+          } catch (adminError) {
+            if (kDebugMode) {
+              debugPrint('❌ Admin giriş hatası: $adminError');
+            }
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(
-                    '✅ Hoş geldiniz ${adminData['firstName']} ${adminData['lastName']}!',
-                  ),
-                  backgroundColor: Colors.green,
+                  content: Text('Admin giriş hatası: $adminError'),
+                  backgroundColor: Colors.red,
                 ),
               );
-
-              Navigator.pushReplacementNamed(context, '/admin');
-              return;
             }
-          } else {
-            throw Exception('Admin hesabı bulunamadı');
+            return;
           }
         }
 
