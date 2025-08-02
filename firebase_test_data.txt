@@ -1,0 +1,83 @@
+/*
+Firebase Firestore Test Verisi
+
+Bu dosya, uygulamayı test etmek için Firebase Console'da manuel olarak eklenecek örnek verileri içerir.
+
+1. Firebase Console'a gidin
+2. Firestore Database'i açın
+3. Aşağıdaki koleksiyonları ve dokümanları oluşturun:
+
+=== hospitals Koleksiyonu ===
+
+Doküman ID: ankara-city-hospital
+{
+  "name": "Ankara Şehir Hastanesi",
+  "address": "Üniversiteler Mah. 1604. Cad. No:9 Çankaya/Ankara",
+  "phone": "0312 552 60 00",
+  "city": "Ankara",
+  "district": "Çankaya",
+  "isActive": true,
+  "totalDoctors": 0,
+  "totalBeds": 2500,
+  "createdAt": timestamp,
+}
+
+Doküman ID: ankara-university-hospital
+{
+  "name": "Ankara Üniversitesi Tıp Fakültesi Hastanesi",
+  "address": "Cebeci Mah. Dikimevi Ankara", 
+  "phone": "0312 508 20 00",
+  "city": "Ankara",
+  "district": "Cebeci",
+  "isActive": true,
+  "totalDoctors": 0,
+  "totalBeds": 1200,
+  "createdAt": timestamp,
+}
+
+Doküman ID: hacettepe-hospital
+{
+  "name": "Hacettepe Üniversitesi Hastanesi",
+  "address": "Sıhhiye Mah. Hacettepe Üniversitesi Ankara",
+  "phone": "0312 305 10 00", 
+  "city": "Ankara",
+  "district": "Sıhhiye",
+  "isActive": true,
+  "totalDoctors": 0,
+  "totalBeds": 1000,
+  "createdAt": timestamp,
+}
+
+=== users Koleksiyonu (Admin Hesabı) ===
+
+Doküman ID: admin-user-001
+{
+  "firstName": "sistem",
+  "lastName": "yönetici",
+  "email": "admin@hastane-acil.com",
+  "tcKimlik": "11111111111",
+  "password": "HastaneAdmin2025!",
+  "phone": "05551234567",
+  "role": "admin",
+  "isActive": true,
+  "createdAt": timestamp,
+}
+
+=== Koleksiyonlar (boş olarak oluşturun) ===
+- doctors (doktorlar burada saklanacak)
+- applications (hasta başvuruları)
+- appointments (randevular)
+- reports (raporlar)
+
+=== Test Adımları ===
+
+1. Yukarıdaki verileri Firebase Console'dan ekleyin
+2. Uygulamayı çalıştırın
+3. Admin hesabı ile giriş yapın:
+   - E-posta: admin@hastane-acil.com
+   - Şifre: HastaneAdmin2025!
+4. Admin panelinde "Yeni Doktor Oluştur"a tıklayın
+5. Doktor bilgilerini doldurun ve oluşturun
+6. Oluşturulan doktor bilgileri ile giriş yapmayı test edin
+
+*/
